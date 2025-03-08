@@ -52,7 +52,7 @@ const MessageContainer = () => {
                             <Messages />
                         </div>
                     </main>
-                    <footer className='flex-none bg-gray-800 border-t border-gray-700'>
+                    <footer className='flex-none w-full sticky bottom-0 z-50'>
                         <SendInput />
                     </footer>
                 </>
