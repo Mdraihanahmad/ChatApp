@@ -18,13 +18,14 @@ const MessageContainer = () => {
         <div className='h-full flex flex-col bg-gray-800 rounded-lg overflow-hidden'>
             {selectedUser !== null ? (
                 <>
-                    <div className='flex items-center bg-gray-900 text-white px-4 py-3 shadow-lg'>
+                    <div className='sticky top-0 z-50 flex items-center bg-gray-900 text-white px-3 py-3 shadow-lg'>
                         <button 
                             onClick={handleBack}
-                            className='md:hidden mr-3 p-2 hover:bg-gray-700 rounded-full transition-colors'
+                            className='md:hidden flex items-center justify-center w-10 h-10 mr-2 bg-gray-700 hover:bg-gray-600 rounded-full transition-colors'
+                            aria-label="Back to users list"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
                             </svg>
                         </button>
                         <div className={`relative ${isOnline ? 'online' : ''}`}>
@@ -46,10 +47,12 @@ const MessageContainer = () => {
                             </p>
                         </div>
                     </div>
-                    <div className='flex-1 overflow-hidden'>
+                    <div className='flex-1 overflow-y-auto relative'>
                         <Messages />
                     </div>
-                    <SendInput />
+                    <div className='sticky bottom-0 z-50 bg-gray-800'>
+                        <SendInput />
+                    </div>
                 </>
             ) : (
                 <div className='h-full flex flex-col justify-center items-center bg-gray-800 text-white p-4'>
