@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import SendInput from './SendInput'
 import Messages from './Messages';
-import { useSelector,useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { setSelectedUser } from '../redux/userSlice';
 
 const MessageContainer = () => {
@@ -9,37 +9,57 @@ const MessageContainer = () => {
     const dispatch = useDispatch();
 
     const isOnline = onlineUsers?.includes(selectedUser?._id);
+
+    const handleBack = () => {
+        dispatch(setSelectedUser(null));
+    };
    
     return (
-        <>
-            {
-                selectedUser !== null ? (
-                    <div className='md:min-w-[550px] flex flex-col'>
-                        <div className='flex gap-2 items-center bg-zinc-800 text-white px-4 py-2 mb-2'>
-                            <div className={`avatar ${isOnline ? 'online' : ''}`}>
-                                <div className='w-12 rounded-full'>
-                                    <img src={selectedUser?.profilePhoto} alt="user-profile" />
-                                </div>
+        <div className='h-full flex flex-col bg-gray-800 rounded-lg overflow-hidden'>
+            {selectedUser !== null ? (
+                <>
+                    <div className='flex items-center bg-gray-900 text-white px-4 py-3 shadow-lg'>
+                        <button 
+                            onClick={handleBack}
+                            className='md:hidden mr-3 p-2 hover:bg-gray-700 rounded-full transition-colors'
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                            </svg>
+                        </button>
+                        <div className={`relative ${isOnline ? 'online' : ''}`}>
+                            <div className='w-12 h-12 rounded-full overflow-hidden'>
+                                <img 
+                                    src={selectedUser?.profilePhoto} 
+                                    alt="user-profile"
+                                    className='w-full h-full object-cover'
+                                />
                             </div>
-                            <div className='flex flex-col flex-1'>
-                                <div className='flex justify-between gap-2'>
-                                    <p>{selectedUser?.fullName}</p>
-                                </div>
-                            </div>
+                            {isOnline && (
+                                <span className='absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white'></span>
+                            )}
                         </div>
+                        <div className='ml-4 flex-1'>
+                            <h3 className='font-semibold text-lg'>{selectedUser?.fullName}</h3>
+                            <p className='text-sm text-gray-300'>
+                                {isOnline ? 'Online' : 'Offline'}
+                            </p>
+                        </div>
+                    </div>
+                    <div className='flex-1 overflow-hidden'>
                         <Messages />
-                        <SendInput />
                     </div>
-                ) : (
-                    <div className='md:min-w-[550px] flex flex-col justify-center items-center'>
-                        <h1 className='text-4xl text-white font-bold'>Hi,{authUser?.fullName} </h1>
-                        <h1 className='text-2xl text-white'>Let's start conversation</h1>
-
-                    </div>
-                )
-            }
-        </>
-
+                    <SendInput />
+                </>
+            ) : (
+                <div className='h-full flex flex-col justify-center items-center bg-gray-800 text-white p-4'>
+                    <h1 className='text-3xl md:text-4xl font-bold mb-4'>Welcome, {authUser?.fullName}!</h1>
+                    <p className='text-xl md:text-2xl text-gray-300 text-center'>
+                        Select a conversation to start chatting
+                    </p>
+                </div>
+            )}
+        </div>
     )
 }
 

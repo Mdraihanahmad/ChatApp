@@ -5,17 +5,23 @@ import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
 const HomePage = () => {
-  const { authUser } = useSelector(store => store.user);
+  const { authUser, selectedUser } = useSelector(store => store.user);
   const navigate = useNavigate();
+  
   useEffect(() => {
     if (!authUser) {
       navigate("/login");
     }
   }, []);
+  
   return (
-    <div className='flex sm:h-[450px] md:h-[550px] rounded-lg overflow-hidden bg-gray-400 bg-clip-padding backdrop-filter backdrop-blur-lg bg-opacity-0'>
-      <Sidebar />
-      <MessageContainer />
+    <div className='flex flex-col md:flex-row h-screen md:h-[90vh] w-full max-w-7xl mx-auto p-2 md:p-4 gap-2 rounded-lg overflow-hidden bg-gradient-to-br from-gray-900 to-gray-800'>
+      <div className={`md:w-1/3 lg:w-1/4 ${selectedUser ? 'hidden md:block' : 'block'}`}>
+        <Sidebar />
+      </div>
+      <div className={`flex-1 md:w-2/3 lg:w-3/4 ${selectedUser ? 'block' : 'hidden md:block'}`}>
+        <MessageContainer />
+      </div>
     </div>
   )
 }
