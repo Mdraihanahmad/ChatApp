@@ -8,7 +8,7 @@ import {useSelector,useDispatch} from "react-redux";
 import io from "socket.io-client";
 import { setSocket } from './redux/socketSlice';
 import { setOnlineUsers } from './redux/userSlice';
-// import { BASE_URL } from '.';
+import { BASE_URL } from '.';
 
 const router = createBrowserRouter([
   {
@@ -33,7 +33,7 @@ function App() {
 
   useEffect(()=>{
     if(authUser){
-      const socketio = io(`https://chatapp-k379.onrender.com`, {
+      const socketio = io(`https://mychatapp-2v24.onrender.com`, {
           query:{
             userId:authUser._id
           }
