@@ -12,7 +12,7 @@ const HomePage = () => {
     if (!authUser) {
       navigate("/login");
     }
-  }, []);
+  }, [authUser, navigate]);
   
   return (
     <div className='flex flex-col md:flex-row h-screen md:h-[90vh] w-full max-w-7xl mx-auto p-2 md:p-4 gap-2 rounded-lg overflow-hidden bg-gradient-to-br from-gray-900 to-gray-800'>
