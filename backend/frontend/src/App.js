@@ -33,7 +33,7 @@ function App() {
 
   useEffect(()=>{
     if(authUser){
-      const socketio = io(`https://mychatapp-2v24.onrender.com`, {
+      const socketio = io(`https://chitchat-3h7q.onrender.com`, {
           query:{
             userId:authUser._id
           }
