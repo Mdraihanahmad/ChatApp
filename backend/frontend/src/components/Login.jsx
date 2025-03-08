@@ -50,7 +50,7 @@ const Login = () => {
               className='w-full px-4 py-2 rounded-lg border border-gray-600 bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500'
               type="text"
               placeholder='Enter your username'
-            />
+            /> 
           </div>
           <div className="mb-6">
             <label className='block text-white text-sm font-semibold mb-2'>

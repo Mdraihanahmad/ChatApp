@@ -15,10 +15,10 @@ const MessageContainer = () => {
     };
    
     return (
-        <div className='h-full flex flex-col bg-gray-800 rounded-lg overflow-hidden'>
+        <div className='h-screen md:h-full w-full fixed md:relative left-0 top-0 md:inset-auto flex flex-col bg-gray-800 rounded-lg'>
             {selectedUser !== null ? (
                 <>
-                    <div className='sticky top-0 z-50 flex items-center bg-gray-900 text-white px-3 py-3 shadow-lg'>
+                    <header className='flex-none flex items-center bg-gray-900 text-white px-3 py-3 shadow-lg'>
                         <button 
                             onClick={handleBack}
                             className='md:hidden flex items-center justify-center w-10 h-10 mr-2 bg-gray-700 hover:bg-gray-600 rounded-full transition-colors'
@@ -46,13 +46,15 @@ const MessageContainer = () => {
                                 {isOnline ? 'Online' : 'Offline'}
                             </p>
                         </div>
-                    </div>
-                    <div className='flex-1 overflow-y-auto relative'>
-                        <Messages />
-                    </div>
-                    <div className='sticky bottom-0 z-50 bg-gray-800'>
+                    </header>
+                    <main className='flex-1 overflow-hidden relative'>
+                        <div className='absolute inset-0 overflow-y-auto'>
+                            <Messages />
+                        </div>
+                    </main>
+                    <footer className='flex-none bg-gray-800 border-t border-gray-700'>
                         <SendInput />
-                    </div>
+                    </footer>
                 </>
             ) : (
                 <div className='h-full flex flex-col justify-center items-center bg-gray-800 text-white p-4'>

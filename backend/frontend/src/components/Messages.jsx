@@ -19,8 +19,8 @@ const Messages = () => {
     }, [messages]);
 
     return (
-        <div className='h-full flex flex-col'>
-            <div className='flex-1 px-4 py-2 space-y-4'>
+        <div className='h-full py-4 px-4'>
+            <div className='space-y-4'>
                 {messages && messages.length > 0 ? (
                     messages.map((message) => (
                         <Message key={message._id} message={message} />
@@ -30,7 +30,7 @@ const Messages = () => {
                         No messages yet. Start the conversation!
                     </div>
                 )}
-                <div ref={messagesEndRef} />
+                <div ref={messagesEndRef} className="h-4" />
             </div>
         </div>
     )
