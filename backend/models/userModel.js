@@ -22,6 +22,18 @@ const userModel = new mongoose.Schema({
         type:String,
         enum:["male", "female"],
         required:true
-    }
+    },
+    friends: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+    }],
+    friendRequests: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+    }],
+    sentFriendRequests: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+    }]
 }, {timestamps:true});
 export const User = mongoose.model("User", userModel);

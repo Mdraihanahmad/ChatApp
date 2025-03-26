@@ -18,7 +18,7 @@ app.use(express.urlencoded({extended:true}));
 app.use(express.json()); 
 app.use(cookieParser());
 const corsOption={
-    origin:'http://localhost:3000',
+    origin:'https://chitchat-3h7q.onrender.com',
     credentials:true
 };
 app.use(cors(corsOption)); 

@@ -74,11 +74,12 @@ export const login = async (req, res) => {
         console.log(error);
     }
 }
-export const logout = (req, res) => {
+export const logout = async (req, res) => {
     try {
-        return res.status(200).cookie("token", "", { maxAge: 0 }).json({
-            message: "logged out successfully."
-        })
+        return res.status(200).clearCookie("token").json({
+            message: "User Logged Out",
+            success: true
+        });
     } catch (error) {
         console.log(error);
     }
@@ -90,5 +91,169 @@ export const getOtherUsers = async (req, res) => {
         return res.status(200).json(otherUsers);
     } catch (error) {
         console.log(error);
+    }
+}
+
+export const sendFriendRequest = async (req, res) => {
+    try {
+        const { userId } = req.params; // ID of the user to send friend request to
+        const loggedInUserId = req.id; // Current user ID
+
+        // Check if users exist
+        const requestReceiver = await User.findById(userId);
+        const requestSender = await User.findById(loggedInUserId);
+
+        if (!requestReceiver || !requestSender) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Check if they are already friends
+        if (requestReceiver.friends.includes(loggedInUserId)) {
+            return res.status(400).json({ message: "You are already friends with this user" });
+        }
+
+        // Check if request is already sent
+        if (requestReceiver.friendRequests.includes(loggedInUserId) || 
+            requestSender.sentFriendRequests.includes(userId)) {
+            return res.status(400).json({ message: "Friend request already sent" });
+        }
+
+        // Add to friend requests
+        requestReceiver.friendRequests.push(loggedInUserId);
+        requestSender.sentFriendRequests.push(userId);
+
+        await Promise.all([requestReceiver.save(), requestSender.save()]);
+
+        return res.status(200).json({ message: "Friend request sent successfully" });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Server error" });
+    }
+}
+
+export const acceptFriendRequest = async (req, res) => {
+    try {
+        const { userId } = req.params; // ID of the user who sent the request
+        const loggedInUserId = req.id; // Current user ID
+
+        console.log(`Accepting friend request. Sender: ${userId}, Receiver: ${loggedInUserId}`);
+
+        // Check if users exist
+        const requestSender = await User.findById(userId);
+        const requestReceiver = await User.findById(loggedInUserId);
+
+        if (!requestSender || !requestReceiver) {
+            console.log("User not found during friend request acceptance");
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Check if friend request exists
+        if (!requestReceiver.friendRequests.includes(userId)) {
+            console.log("No friend request found");
+            return res.status(400).json({ message: "No friend request from this user" });
+        }
+
+        console.log(`Before acceptance: Receiver's friends: ${requestReceiver.friends.length}, Sender's friends: ${requestSender.friends.length}`);
+
+        // Add each other as friends
+        requestReceiver.friends.push(userId);
+        requestSender.friends.push(loggedInUserId);
+
+        // Remove from friend requests
+        requestReceiver.friendRequests = requestReceiver.friendRequests.filter(
+            (id) => id.toString() !== userId.toString()
+        );
+        requestSender.sentFriendRequests = requestSender.sentFriendRequests.filter(
+            (id) => id.toString() !== loggedInUserId.toString()
+        );
+
+        await Promise.all([requestReceiver.save(), requestSender.save()]);
+
+        console.log(`After acceptance: Receiver's friends: ${requestReceiver.friends.length}, Sender's friends: ${requestSender.friends.length}`);
+
+        return res.status(200).json({ 
+            message: "Friend request accepted",
+            receiverFriends: requestReceiver.friends,
+            senderFriends: requestSender.friends
+        });
+    } catch (error) {
+        console.error("Error accepting friend request:", error);
+        return res.status(500).json({ message: "Server error" });
+    }
+}
+
+export const declineFriendRequest = async (req, res) => {
+    try {
+        const { userId } = req.params; // ID of the user who sent the request
+        const loggedInUserId = req.id; // Current user ID
+
+        // Check if users exist
+        const requestSender = await User.findById(userId);
+        const requestReceiver = await User.findById(loggedInUserId);
+
+        if (!requestSender || !requestReceiver) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Remove from friend requests
+        requestReceiver.friendRequests = requestReceiver.friendRequests.filter(
+            (id) => id.toString() !== userId.toString()
+        );
+        requestSender.sentFriendRequests = requestSender.sentFriendRequests.filter(
+            (id) => id.toString() !== loggedInUserId.toString()
+        );
+
+        await Promise.all([requestReceiver.save(), requestSender.save()]);
+
+        return res.status(200).json({ message: "Friend request declined" });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Server error" });
+    }
+}
+
+export const getFriendRequests = async (req, res) => {
+    try {
+        const loggedInUserId = req.id;
+        const user = await User.findById(loggedInUserId).populate('friendRequests', '-password');
+        
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        return res.status(200).json(user.friendRequests);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Server error" });
+    }
+}
+
+export const getUserProfile = async (req, res) => {
+    try {
+        const loggedInUserId = req.id;
+        console.log("Fetching profile for user:", loggedInUserId);
+        
+        // First get the basic user data
+        const user = await User.findById(loggedInUserId)
+            .select('-password');
+        
+        if (!user) {
+            console.log("User not found");
+            return res.status(404).json({ message: "User not found" });
+        }
+        
+        // Populate friends array with full user objects for better frontend access
+        const populatedUser = await User.findById(loggedInUserId)
+            .select('-password')
+            .populate('friendRequests', '-password')
+            .populate('friends', '-password');
+        
+        console.log("User profile fetched. Friends count:", populatedUser.friends.length);
+        
+        // Return the populated user data
+        return res.status(200).json(populatedUser);
+    } catch (error) {
+        console.error("Error fetching user profile:", error);
+        return res.status(500).json({ message: "Server error" });
     }
 }
